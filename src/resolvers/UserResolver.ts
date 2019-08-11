@@ -1,26 +1,51 @@
-import { Resolver, Query, Mutation, Arg } from 'type-graphql';
 import 'reflect-metadata';
+import { Arg, Mutation, Query, Resolver } from 'type-graphql';
+import { Inject, Service } from 'typedi';
 import UserModel, { IUser } from '../data/schemas/UserModel';
+import { UserService } from '../services';
+import { UserTokenType, UserType } from '../types';
 import { NewUserDataInput } from '../validators';
-import { UserType } from '../types';
+import { Authenticated } from '../decorators';
+import { ForbiddenError } from 'apollo-server-core';
 
+@Service()
 @Resolver(UserType)
 export default class UserResolver {
-  @Query(returns => UserType)
-  async user(@Arg('email') email: string) {
-    const user = await UserModel.findOne({ email });
+  @Inject('context')
+  private readonly context;
+
+  constructor(private readonly userService: UserService) {}
+
+  @Authenticated()
+  @Query(() => UserType)
+  async getUser(@Arg('email') email: string) {
+    const user = await this.userService.findOne(email);
+
+    if (this.context['user'] !== user.email) {
+      throw new ForbiddenError('User is not allowed to access this content.');
+    }
+
     return user;
   }
 
-  @Query(() => [UserType])
-  async users() {
-    const users = await UserModel.find({});
-    return users;
+  @Query(() => UserType)
+  async test(@Arg('email') email: string) {
+    return new UserType({
+      phones: [{ area: '11', number: '12321312' }],
+      name: 'adsad',
+      email: 'test'
+    } as IUser);
   }
 
-  @Mutation(returns => UserType)
-  async createUser(@Arg('newUserData') newUserData: NewUserDataInput) {
-    const newUser: IUser = (await new UserModel({ ...(newUserData as any) }).save()) as any;
+  @Query(() => UserTokenType)
+  async signIn(@Arg('email') email: string, @Arg('password') password: string) {
+    const token: string = await this.userService.signIn(email, password);
+    return new UserTokenType(token);
+  }
+
+  @Mutation(() => UserType)
+  async signUp(@Arg('newUserData') newUserData: NewUserDataInput) {
+    const newUser = await this.userService.createUser(newUserData as IUser);
     return new UserType(newUser);
   }
 }

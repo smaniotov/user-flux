@@ -1,42 +1,31 @@
-import { InputType, Field, ArgsType, Int } from 'type-graphql';
-import { MaxLength, Length, Min, Max, IsEmail, IsDate } from 'class-validator';
+import { IsDate, IsEmail, Length, ValidateNested } from 'class-validator';
+import 'reflect-metadata';
+import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class NewUserDataInput {
-  @Field({ nullable: false })
+  @Field(() => String)
   @Length(5, 255)
-  firstname: string;
+  name: string;
 
-  @Field({ nullable: false })
-  @Length(5, 255)
-  lastname: string;
-
-  @Field({ nullable: false })
+  @Field(() => String)
   @IsEmail()
   email: string;
 
-  @Field({ nullable: true })
-  @IsDate()
-  birthdate: Date;
+  @Field(() => String)
+  @Length(3, 50)
+  password: string;
 
-  @Field({ nullable: true })
-  gender: string;
+  @Field(() => [NewUserDataInputPhone], { nullable: true })
+  // @ValidateNested()
+  phones: NewUserDataInputPhone[];
+}
 
-  @Field({ nullable: true })
-  status: number;
+@InputType()
+export class NewUserDataInputPhone {
+  @Field(() => String)
+  number: string;
 
-  @Field({ nullable: true })
-  phone: string;
-
-  @Field({ nullable: true })
-  phoneArea: string;
-
-  @Field({ nullable: true })
-  createdAt: Date;
-
-  @Field({ nullable: true })
-  updatedAt: Date;
-
-  @Field({ nullable: true })
-  lastLogin: Date;
+  @Field(() => String)
+  area: string;
 }

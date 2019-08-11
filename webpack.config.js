@@ -1,11 +1,13 @@
 const webpack = require('webpack');
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
-  devtool: 'inline-source-map',
-  entry: './src/index.ts',
+  devtool: '#source-map',
+  entry: {
+    index: './src/index.ts'
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js'
@@ -19,9 +21,12 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts$/,
         use: 'ts-loader'
       }
     ]
+  },
+  optimization: {
+    minimize: false
   }
 };

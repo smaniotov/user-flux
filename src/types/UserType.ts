@@ -1,13 +1,15 @@
-import { ObjectType, Field, ID } from 'type-graphql';
+import 'reflect-metadata';
+import { Field, ObjectType } from 'type-graphql';
 import { IUser } from '../data/schemas/UserModel';
+import { ValidateNested } from 'class-validator';
 
 @ObjectType()
-export default class UserType {
+export class UserType {
   constructor(user: IUser) {
     this.id = user.id;
     this.email = user.email;
-    this.firstname = user.firstname;
-    this.lastname = user.lastname;
+    this.name = user.name;
+    this.phones = user.phones;
   }
 
   @Field({ nullable: true })
@@ -16,9 +18,29 @@ export default class UserType {
   @Field()
   email: string;
 
-  @Field({ nullable: true })
-  firstname?: string;
+  @Field()
+  name: string;
+
+  @Field(() => [UserPhone], { nullable: true })
+  @ValidateNested()
+  phones?: UserPhone[];
+}
+
+@ObjectType()
+export class UserPhone {
+  @Field()
+  number: string;
 
   @Field()
-  lastname: string;
+  area: string;
+}
+
+@ObjectType()
+export class UserTokenType {
+  constructor(token: string) {
+    this.token = token;
+  }
+
+  @Field(() => String)
+  token: string;
 }

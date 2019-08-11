@@ -32,7 +32,11 @@ export default class UserService {
       throw new AuthenticationError('Incorrect password');
     }
 
-    return jwt.sign(email, 'TypeGraphQL');
+    user.updatedAt = new Date();
+    user.lastLogin = new Date();
+    await user.save();
+
+    return jwt.sign(email, this.context['secret']);
   };
 
   public createUser = async (user: IUser) => {
