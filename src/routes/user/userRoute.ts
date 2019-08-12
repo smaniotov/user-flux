@@ -6,8 +6,8 @@ import { GET_USER, initializeApolloServer, SIGN_IN, SIGN_UP } from '../../utils'
 const router = express.Router();
 
 const userRouter = async () => {
-  router.get('/:email', async (req, res) => {
-    const { email } = req.params;
+  router.get('/', async (req, res) => {
+    const { email } = req.query;
 
     try {
       const { query } = await createTestClient(await initializeApolloServer(req));
