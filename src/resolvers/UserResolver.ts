@@ -1,12 +1,12 @@
+import { ForbiddenError } from 'apollo-server-core';
+import { IUser } from '../data/schemas/UserModel';
+import { Authenticated } from '../decorators';
 import 'reflect-metadata';
+import { UserService } from '../services';
 import { Arg, Mutation, Query, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
-import UserModel, { IUser } from '../data/schemas/UserModel';
-import { UserService } from '../services';
 import { UserTokenType, UserType } from '../types';
 import { NewUserDataInput } from '../validators';
-import { Authenticated } from '../decorators';
-import { ForbiddenError } from 'apollo-server-core';
 
 @Service()
 @Resolver(UserType)
