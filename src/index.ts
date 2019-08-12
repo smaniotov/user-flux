@@ -8,7 +8,8 @@ import { initializeApolloServer } from './utils';
 import bodyParser = require('body-parser');
 
 const tokenSecret = process.env.TOKEN_SECRET || 'test';
-const databaseURL: string = process.env.DATABASE || 'mongodb://localhost:27017/flow';
+const databaseURL: string = process.env.DATABASE || 'mongodb://localhost:27017';
+const PORT: string = process.env.PORT || '8080';
 
 mongoose.connect(databaseURL, { useNewUrlParser: true, useCreateIndex: true });
 
@@ -32,8 +33,8 @@ const start = async () => {
 
   app.use('/users', await userRoute());
 
-  app.listen(8080, () => {
-    console.log('Running a GraphQL API server at localhost:8080/graphql');
+  app.listen(PORT, () => {
+    console.log(`Running a GraphQL API server at port ${server.graphqlPath}`);
   });
 };
 

@@ -3,7 +3,7 @@ const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  devtool: '#source-map',
+  devtool: 'source-map',
   entry: {
     index: './src/index.ts'
   },
