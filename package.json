@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon --exec 'mocha -r ts-node/register ./test/*.ts'",
+    "test": "mocha -r ts-node/register ./test/*.ts",
+    "start:test": "nodemon --exec 'mocha -r ts-node/register ./test/*.ts'",
     "start": "node --inspect -r ts-node/register ./src/index.ts",
     "build": "webpack --mode=development",
     "build:prod": "webpack --mode=production",
     "dev": "./node_modules/nodemon/bin/nodemon.js",
-    "lint:ts": "tslint 'src/**/*.{ts,tsx}'"
+    "lint:ts": "tslint --project tsconfig.json 'src/**/*.{ts,tsx}'"
   },
   "author": "Vinícius Smanioto",
   "license": "ISC",
