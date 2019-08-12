@@ -5,12 +5,12 @@ import { GET_USER, initializeApolloServer, SIGN_IN, SIGN_UP } from '../../utils'
 
 const router = express.Router();
 
-const userRouter = async () => {
+const userRouter = () => {
   router.get('/', async (req, res) => {
     const { email } = req.query;
 
     try {
-      const { query } = await createTestClient(await initializeApolloServer(req));
+      const { query } = await createTestClient(initializeApolloServer(req));
       const result = await query({ query: GET_USER, variables: { email } });
       send(result, res);
     } catch (e) {
@@ -22,7 +22,7 @@ const userRouter = async () => {
     const { email, password } = req.body;
 
     try {
-      const { query } = await createTestClient(await initializeApolloServer(req));
+      const { query } = await createTestClient(initializeApolloServer(req));
       const result = await query({ query: SIGN_IN, variables: { email, password } });
       send(result, res);
     } catch (e) {
@@ -41,7 +41,7 @@ const userRouter = async () => {
     };
 
     try {
-      const { mutate } = await createTestClient(await initializeApolloServer(req));
+      const { mutate } = await createTestClient(initializeApolloServer(req));
       const result = await mutate({ mutation: SIGN_UP, variables: { newUserData } });
       send(result, res);
     } catch (e) {
