@@ -1,12 +1,17 @@
-import { AuthenticationError, ForbiddenError } from 'apollo-server-core';
-import { PersistedQueryNotFoundError } from 'apollo-server-errors';
+import {
+  ApolloError,
+  AuthenticationError,
+  PersistedQueryNotFoundError,
+  PersistedQueryNotSupportedError
+} from 'apollo-server-errors';
 import bcrypt from 'bcrypt';
 import { default as jwt } from 'jsonwebtoken';
 import 'reflect-metadata';
 import { Inject, Service } from 'typedi';
 import { IUser, UserModel } from '../data';
+import { ErrorEnum } from '../enums';
 
-const SALT_ROUNDS = 16;
+const SALT_ROUNDS = 8;
 
 @Service()
 export default class UserService {
@@ -39,8 +44,17 @@ export default class UserService {
     return jwt.sign(email, this.context['secret']);
   };
 
-  public createUser = async (user: IUser) => {
+  public createUser = async (user: IUser): Promise<IUser> => {
     const hash: string = await bcrypt.hash(user.password, SALT_ROUNDS);
-    return await new UserModel({ ...user, ...{ password: hash } }).save();
+    try {
+      const savedUser = await new UserModel({ ...user, ...{ password: hash } }).save();
+      return savedUser;
+    } catch (e) {
+      if (e.code === 11000) {
+        throw new ApolloError('User already exists.', ErrorEnum.Conflict);
+      }
+
+      throw new PersistedQueryNotSupportedError();
+    }
   };
 }
