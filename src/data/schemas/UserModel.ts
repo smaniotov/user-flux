@@ -13,9 +13,9 @@ export interface IUser extends Document {
 
 export const userSchema: Schema = new Schema({
   id: String,
-  name: String,
-  email: { type: String, unique: true },
-  password: String,
+  name: { type: String, required: true },
+  email: { type: String, unique: true, trim: true, required: true },
+  password: { type: String, required: true },
   phones: [{ number: String, area: String }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
