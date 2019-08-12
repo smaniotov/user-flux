@@ -39,19 +39,19 @@ export class NewUserDataWrapper {
 }
 
 export const getSignUp = async () => {
-  const server = await initializeApolloServer({ id: Date.now() });
+  const server = initializeApolloServer({ id: Date.now() });
   const { mutate } = createTestClient(server);
   return async newUserData => await mutate({ mutation: SIGN_UP, variables: { newUserData } });
 };
 
 export const getSignIn = async () => {
-  const server = await initializeApolloServer({ id: Date.now() });
+  const server = initializeApolloServer({ id: Date.now() });
   const { query } = createTestClient(server);
   return async (email, password) => await query({ query: SIGN_IN, variables: { email, password } });
 };
 
 export const getUserFetch = async (user?: string) => {
-  const server = await initializeApolloServer({ user, id: Date.now() });
+  const server = initializeApolloServer({ user, id: Date.now() });
   const { query } = createTestClient(server);
   return async email => await query({ query: GET_USER, variables: { email } });
 };
