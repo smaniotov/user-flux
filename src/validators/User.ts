@@ -5,7 +5,7 @@ import { Field, InputType } from 'type-graphql';
 @InputType()
 export class NewUserDataInput {
   @Field(() => String)
-  @Length(5, 255)
+  @Length(2, 255)
   name: string;
 
   @Field(() => String)

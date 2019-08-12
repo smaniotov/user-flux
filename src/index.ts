@@ -1,46 +1,27 @@
-import { Context } from 'apollo-server-core';
-import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
 import express from 'express';
 import expressJwt from 'express-jwt';
 import expressRequestId from 'express-request-id';
-import { graphql } from 'graphql';
 import mongoose from 'mongoose';
-import { ResolverData } from 'type-graphql';
-import { Container } from 'typedi';
-import createSchema from './util/createSchema';
-import ErrorParser from './util/ErrorParser';
-import mountContext from './util/mountContext';
-import { getUser } from './util';
+import { userRoute } from './routes';
+import { initializeApolloServer } from './utils';
+import bodyParser = require('body-parser');
 
 const tokenSecret = process.env.TOKEN_SECRET || 'test';
-const databaseURL: string = process.env.DATABASE || 'mongodb://localhost:27017/test';
+const databaseURL: string = process.env.DATABASE || 'mongodb://localhost:27017/flow';
 
-mongoose.connect(databaseURL, { useNewUrlParser: true });
-
-const path = '/graphql';
+mongoose.connect(databaseURL, { useNewUrlParser: true, useCreateIndex: true });
 
 const start = async () => {
   const app = express();
 
   app.use(cors());
   app.use(expressRequestId());
+  app.use(bodyParser());
 
-  const server = new ApolloServer({
-    schema: await createSchema(),
-    playground: { version: '1.7.25' },
-    context: ({ req }) => {
-      return mountContext(req);
-    },
-    formatResponse: (response: any, { context }: ResolverData<Context>) => {
-      Container.reset(context['requestId']);
-      return response;
-    },
-    formatError: ErrorParser
-  });
+  const server = await initializeApolloServer();
 
   app.use(
-    path,
     expressJwt({
       secret: tokenSecret,
       credentialsRequired: false
@@ -49,22 +30,7 @@ const start = async () => {
 
   server.applyMiddleware({ app });
 
-  app.post('/users/:email', async (req, res, next) => {
-    const { email } = req.params;
-
-    const query = getUser({ email });
-
-    const context = mountContext(req);
-    const result = await graphql({
-      schema: await createSchema(),
-      contextValue: context,
-      source: query
-    });
-    console.log(result);
-    res.send(result);
-  });
-
-  // app.use('/users', userRoute);
+  app.use('/users', await userRoute());
 
   app.listen(8080, () => {
     console.log('Running a GraphQL API server at localhost:8080/graphql');
