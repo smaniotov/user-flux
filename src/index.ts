@@ -18,9 +18,12 @@ const start = async () => {
 
   app.use(cors());
   app.use(expressRequestId());
-  app.use(bodyParser());
+  app.use(bodyParser.json());
 
-  const server = await initializeApolloServer();
+  const server = initializeApolloServer(null, {
+    playground: { version: '1.7.25' },
+    introspection: true
+  });
 
   app.use(
     expressJwt({
@@ -31,10 +34,10 @@ const start = async () => {
 
   server.applyMiddleware({ app });
 
-  app.use('/users', await userRoute());
+  app.use('/users', userRoute());
 
   app.listen(PORT, () => {
-    console.log(`Running a GraphQL API server at ${server.graphqlPath}`);
+    console.log(`Running a GraphQL API server at ${server.graphqlPath}, port: ${PORT}`);
   });
 };
 
