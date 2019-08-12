@@ -13,8 +13,7 @@ module.exports = {
     filename: 'bundle.js'
   },
   resolve: {
-    extensions: ['.ts', '.js'],
-    modules: ['src', 'node_modules']
+    extensions: ['.ts', '.tsx', '.js']
   },
   externals: [nodeExternals()],
   target: 'node',
