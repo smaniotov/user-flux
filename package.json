@@ -40,7 +40,7 @@
     "tslint": "5.18.0",
     "type-graphql": "0.17.4",
     "typedi": "^0.8.0",
-    "webpack-cli": "3.3.6"
+    "webpack-cli": "3.3.12"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
